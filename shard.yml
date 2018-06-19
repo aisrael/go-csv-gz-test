@@ -1,0 +1,10 @@
+name: crystal-csv-gz-test
+version: 0.1.0
+
+authors:
+  - Alistair Israel <aisrael@gmail.com>
+
+description: |
+  Crystal port of go-csv-gz-test
+
+license: MIT
