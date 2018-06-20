@@ -11,9 +11,7 @@ def process_file(filename : String) : NamedTuple(total: Int32, matched: Int32)
   matched = 0
   File.open(filename) do |file|
     Gzip::Reader.open(file) do |gzip|
-      CSV.each_row(gzip) do |row|
-        time = Time.parse_rfc3339(row[3])
-        matched += 1 if time > MINIMUM_TIME
+      gzip.each_line.each do |_line|
         total += 1
       end
     end
