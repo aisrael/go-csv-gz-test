@@ -1,29 +1,33 @@
-require "csv"
+#!/usr/bin/env ruby
 
-MINIMUM_TIME = Time.parse_rfc3339("2017-11-02T00:00:00.000Z")
+require 'csv'
+require 'zlib'
+require 'time'
+
+MINIMUM_TIME = Time.parse('2017-11-02T00:00:00.000Z')
 
 # process_file processes the .csv.gz files as a stream of bytes counting all records that
 # meet the minimum date
-def process_file(filename : String) : NamedTuple(total: Int32, matched: Int32)
+def process_file(filename)
   puts "Processing: #{filename}"
   total = 0
   matched = 0
   File.open(filename) do |file|
-    CSV.each_row(file) do |row|
-      time = Time.parse_rfc3339(row[3])
+    CSV.new(file).each do |row|
+      time = Time.parse(row[3])
       matched += 1 if time > MINIMUM_TIME
       total += 1
     end
   end
 
-  {total: total, matched: matched}
+  { total: total, matched: matched }
 end
 
 START_TIME = Time.now
 
 total = 0
 matched = 0
-Dir.glob("./testdata/*.csv") do |filename|
+Dir.glob('./testdata/*.csv') do |filename|
   result = process_file(filename)
   total += result[:total]
   matched += result[:matched]
@@ -31,5 +35,5 @@ end
 
 END_TIME   = Time.now
 TOTAL_TIME = END_TIME - START_TIME
-printf "Total: %d, Matched: %d, Ratio: %0.2f%%\n", total, matched, (matched.to_f*100.0/total.to_f)
+printf "Total: %d, Matched: %d, Ratio: %0.2f%%\n", total, matched, (matched.to_f * 100.0 / total.to_f)
 puts "Time: #{TOTAL_TIME}"
