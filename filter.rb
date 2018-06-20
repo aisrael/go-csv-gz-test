@@ -1,17 +1,19 @@
-require "gzip"
+#!/usr/bin/env ruby
+require "zlib"
 
 # process_file processes the .csv.gz files as a stream of bytes counting all records that
 # meet the minimum date
-def process_file(filename : String) : NamedTuple(total: Int32, matched: Int32)
+def process_file(filename)
   puts "Processing: #{filename}"
   total = 0
   matched = 0
   File.open(filename) do |file|
-    Gzip::Reader.open(file) do |gzip|
-      gzip.each_line.each do |_line|
-        total += 1
-      end
+    gzip = Zlib::GzipReader.new(file)
+    gzip.each_line do |line|
+      total += 1
     end
+  ensure
+    gzip.close
   end
 
   {total: total, matched: matched}
