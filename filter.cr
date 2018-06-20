@@ -10,12 +10,10 @@ def process_file(filename : String) : NamedTuple(total: Int32, matched: Int32)
   total = 0
   matched = 0
   File.open(filename) do |file|
-    Gzip::Reader.open(file) do |gzip|
-      CSV.each_row(gzip) do |row|
-        time = Time.parse_rfc3339(row[3])
-        matched += 1 if time > MINIMUM_TIME
-        total += 1
-      end
+    CSV.each_row(file) do |row|
+      time = Time.parse_rfc3339(row[3])
+      matched += 1 if time > MINIMUM_TIME
+      total += 1
     end
   end
 
@@ -26,7 +24,7 @@ START_TIME = Time.now
 
 total = 0
 matched = 0
-Dir.glob("./testdata/*.csv.gz") do |filename|
+Dir.glob("./testdata/*.csv") do |filename|
   result = process_file(filename)
   total += result[:total]
   matched += result[:matched]
